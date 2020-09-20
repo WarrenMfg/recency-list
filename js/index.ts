@@ -1,16 +1,27 @@
-// ⚪️ Initialize LRU for posts and recently viewed
-const lruPosts = new LRUCache(10); // keeps posts in view order
+// ⚪️ Interface for posts
+interface Post {
+  id: number;
+  title: string;
+  body: string;
+  image: string;
+}
+
+// ⚪️ Initialize LRU for recently viewed and declare posts variable
+// const lruPosts = new LRUCache(10); // keeps posts in view order
 const lruRecentlyViewed = new LRUCache(5); // shows five most recent
+let posts: Post[];
 
 // ⚪️ Query DOM
-const posts = document.getElementById('posts') as HTMLElement;
+const postsContainer = document.getElementById(
+  'posts-container'
+) as HTMLElement;
 const modal = document.getElementById('modal') as HTMLElement;
 const recentlyViewed = document.getElementById(
   'recently-viewed'
 ) as HTMLElement;
 
 // ⚪️ Event listeners
-posts.addEventListener('click', e => {
+postsContainer.addEventListener('click', e => {
   const target = e.target as HTMLElement;
   if (target.tagName === 'BUTTON') {
     // update modal
@@ -20,56 +31,52 @@ posts.addEventListener('click', e => {
 
 recentlyViewed.addEventListener('click', e => {
   const target = e.target as HTMLElement;
-  // update modal
-  updateModal(target);
+  if (target.tagName === 'H3') {
+    updateModal(target.parentElement as HTMLElement);
+  }
+  if (target.classList.contains('recently-viewed')) {
+    updateModal(target);
+  }
 });
 
 // ⚪️ Fetch data
-interface Post {
-  id: number;
-  title: string;
-  body: string;
-}
-
 fetch('../data.json')
   .then((res: { json: () => any }) => res.json())
-  .then((d: Post[]) => {
-    for (let i = 0; i < d.length; i++) {
-      lruPosts.set(d[i].id, d[i]);
-    }
-
-    posts.innerHTML = renderDataToDOM();
-  })
+  .then(renderDataToDOM)
   .catch(console.log);
 
 // ⚪️ Render to DOM
-function renderDataToDOM(): string {
-  let dll = lruPosts.getDLL();
+function renderDataToDOM(data: Post[]): void {
+  posts = data;
+
   let html = '';
-  while (dll) {
-    html += makeHTML(dll.value);
-    dll = dll.next;
+  for (let i = 0; i < data.length; i++) {
+    html += makeHTML(data[i]);
   }
-  return html;
+
+  postsContainer.innerHTML = html;
 }
 
-function makeHTML(node: LRUCacheItem): string {
+function makeHTML(post: Post): string {
   return `
     <div class="card ml-auto mr-auto mb-3">
-      <img src="https://placeimg.com/500/250/any?q=${node.value.id}" class="card-img-top img-fluid" alt="Nature photo" width="500" height="250">
+      <div class="card-image-mask">
+        <div class="card-image" style="background-image: url(${post.image})"></div>
+      </div>
       <div class="card-body d-flex flex-column justify-content-center">
-        <h5 class="card-title text-center">${node.value.title}</h5>
-        <button type="button" class="btn btn-primary" data-id=${node.value.id} data-toggle="modal" data-target="#modal">Read More</button>
+        <h5 class="card-title text-center">${post.title}</h5>
+        <button type="button" class="btn btn-primary" data-id=${post.id} data-toggle="modal" data-target="#modal">Read More</button>
       </div>
     </div>
   `;
 }
 
 function updateModal(target: HTMLElement): void {
-  // get post
-  const post = lruPosts.get(target.dataset.id as string);
+  // get id and post
+  const id = target.dataset.id as string;
+  const post = posts[Number(id)];
   // update modal
-  modal.dataset.id = target.dataset.id;
+  modal.dataset.id = id; // needed for updateRecentlyViewed in modalReaction
   const modalTitle = modal.querySelector('#modalTitle') as HTMLElement;
   const modalBody = modal.querySelector('#modalBody') as HTMLElement;
   modalTitle.innerText = post.title;
