@@ -56,7 +56,7 @@ function renderDataToDOM(): string {
 function makeHTML(node: LRUCacheItem): string {
   return `
     <div class="card ml-auto mr-auto mb-3">
-      <img src="https://placeimg.com/500/250/nature?q=${node.value.id}" class="card-img-top img-fluid" alt="Nature photo" width="500" height="250">
+      <img src="https://placeimg.com/500/250/any?q=${node.value.id}" class="card-img-top img-fluid" alt="Nature photo" width="500" height="250">
       <div class="card-body d-flex flex-column justify-content-center">
         <h5 class="card-title text-center">${node.value.title}</h5>
         <button type="button" class="btn btn-primary" data-id=${node.value.id} data-toggle="modal" data-target="#modal">Read More</button>
