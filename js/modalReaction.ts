@@ -26,10 +26,10 @@ function updateRecentlyViewed(id: number): void {
     const currentId = dll.value.value;
     const post = posts[currentId];
     html += `
-      <div class="rounded recently-viewed d-flex justify-content-between align-items-center" data-id=${currentId} data-toggle="modal" data-target="#modal">
-        <h3>${post.title}</h3>
-        <div class="thumbnail-mask">
-          <div class="thumbnail rounded" style="background-image: url(${post.image})"></div>
+      <div class="rv rounded recently-viewed-component d-flex justify-content-between align-items-center" data-id=${currentId} data-toggle="modal" data-target="#modal">
+        <h3 class="rv">${post.title}</h3>
+        <div class="rv thumbnail-container">
+          <div class="rv thumbnail rounded" style="background-image: url(${post.image})"></div>
         </div>
       </div>`;
     dll = dll.next;

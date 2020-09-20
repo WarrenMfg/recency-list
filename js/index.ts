@@ -7,7 +7,6 @@ interface Post {
 }
 
 // ⚪️ Initialize LRU for recently viewed and declare posts variable
-// const lruPosts = new LRUCache(10); // keeps posts in view order
 const lruRecentlyViewed = new LRUCache(5); // shows five most recent
 let posts: Post[];
 
@@ -31,11 +30,11 @@ postsContainer.addEventListener('click', e => {
 
 recentlyViewed.addEventListener('click', e => {
   const target = e.target as HTMLElement;
-  if (target.tagName === 'H3') {
-    updateModal(target.parentElement as HTMLElement);
-  }
-  if (target.classList.contains('recently-viewed')) {
-    updateModal(target);
+  if (target.classList.contains('rv')) {
+    const rvComponent = target.closest(
+      '.recently-viewed-component'
+    ) as HTMLElement;
+    updateModal(rvComponent);
   }
 });
 
@@ -79,6 +78,8 @@ function updateModal(target: HTMLElement): void {
   modal.dataset.id = id; // needed for updateRecentlyViewed in modalReaction
   const modalTitle = modal.querySelector('#modalTitle') as HTMLElement;
   const modalBody = modal.querySelector('#modalBody') as HTMLElement;
+  const modalImage = modal.querySelector('#modalImage') as HTMLElement;
   modalTitle.innerText = post.title;
   modalBody.innerText = post.body;
+  modalImage.style.backgroundImage = `url(${post.image})`;
 }
