@@ -91,8 +91,7 @@ class DLL {
       node.delete();
     }
 
-    // reset because may not have entered if/else statement
-    node.prev = node.next = null;
+    node.sanitize();
 
     if (!this.head) {
       this.head = this.tail = node;
@@ -180,9 +179,9 @@ class LRUCache {
   get(key: string): any | null {
     if (!this._items.hasOwnProperty(key)) return null;
 
-    const LRUCacheItem = this._items[key];
-    this._promote(LRUCacheItem.dllNode!); // ✅ key, value, dllNode (dll head)
-    return LRUCacheItem.value;
+    const cacheItem = this._items[key];
+    this._promote(cacheItem.dllNode!); // ✅ key, value, dllNode (dll head)
+    return cacheItem.value;
   }
 
   private _promote(dllNode: DLLNode): void {
